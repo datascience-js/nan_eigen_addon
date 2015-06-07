@@ -5,7 +5,7 @@
       "sources": [ "addon.cc" ],
       "include_dirs": [
         "<!(node -e \"require('nan')\")",
-		"D:\\project\\eigen-eigen-10219c95fe65\\"
+		"..\\eigen-eigen-10219c95fe65\\"
       ]
     }
   ]
