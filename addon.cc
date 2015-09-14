@@ -1,6 +1,8 @@
 #include <nan.h>
 #include <iostream>
 #include <Eigen/Dense>
+#include <Eigen/Eigenvalues> 
+#include <complex>
 using namespace v8;
 
 
@@ -111,9 +113,55 @@ NAN_METHOD(MatMul2){
 	NanReturnValue(b);
 }
 
+
+NAN_METHOD(GetEigenValues){
+	using CMf = Eigen::Map <const Eigen::MatrixXf >;
+	using Mf = Eigen::Map <Eigen::MatrixXf >;
+	using EMf = Eigen::Map <Eigen::EigenSolver<const Eigen::MatrixXf>::EigenvalueType>;
+
+	if (args.Length() != 4) {
+		NanThrowTypeError("Wrong number of arguments");
+		NanReturnUndefined();
+	}
+
+	if (!args[0]->IsUint32() || !args[1]->IsUint32()) {
+		NanThrowTypeError("Wrong arguments");
+		NanReturnUndefined();
+	}
+	size_t rows1(args[0]->Uint32Value());
+	size_t cols1(args[1]->Uint32Value());
+
+	Local<Object> matrix1Buff = args[2].As<Object>();
+	float *data1 = nullptr;
+	size_t length1 = 0;
+
+	if (matrix1Buff->HasIndexedPropertiesInExternalArrayData()) {
+		length1 = size_t(matrix1Buff->GetIndexedPropertiesExternalArrayDataLength());
+		data1 = static_cast<float*>(matrix1Buff->GetIndexedPropertiesExternalArrayData());
+	}
+	CMf first(data1, rows1, cols1);
+
+	Local<Object> matrixResBuff = args[3].As<Object>();
+	float *resRawData = nullptr;
+	size_t lengthRes = 0;
+
+	if (matrixResBuff->HasIndexedPropertiesInExternalArrayData()) {
+		lengthRes = size_t(matrixResBuff->GetIndexedPropertiesExternalArrayDataLength());
+		resRawData = static_cast<float*>(matrixResBuff->GetIndexedPropertiesExternalArrayData());
+	}
+	EMf eigenResults(reinterpret_cast<std::complex<float>*>(resRawData)/*very ugly but well defined afaik */, rows1, 1);
+	Eigen::EigenSolver<Eigen::MatrixXf> eigenSolver(first, false);
+
+	eigenResults = eigenSolver.eigenvalues();
+	Local<Boolean> b = NanNew(true);
+	NanReturnValue(b);
+}
+
+
 void Init(Handle<Object> exports) {
 	exports->Set(NanNew("MatMul"), NanNew<FunctionTemplate>(MatMul)->GetFunction());
 	exports->Set(NanNew("MatMul2"), NanNew<FunctionTemplate>(MatMul2)->GetFunction());
+	exports->Set(NanNew("GetEigenValues"), NanNew<FunctionTemplate>(GetEigenValues)->GetFunction());
 }
 
 NODE_MODULE(addon, Init)
