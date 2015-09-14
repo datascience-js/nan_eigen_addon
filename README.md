@@ -20,4 +20,4 @@ $ node ./
 
 Note: this addon's gyp file assumes that a folder `..\\eigen-eigen-10219c95fe65\\` exist and contains the above mentioned Eigen library files.
 
-To use another build of Eigen just modify `..\\eigen-eigen-10219c95fe65\\` binding.gyp to `..\\eigen-eigen-[your_build_#]\\`
+To use another version of Eigen just modify `..\\eigen-eigen-10219c95fe65\\` binding.gyp to `..\\eigen-eigen-[your_build_#]\\`
