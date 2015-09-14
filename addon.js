@@ -75,7 +75,32 @@ for (var i = 0; i < 5 ; i+=2) {
 	console.log(eigenTestResult[i] +"+i " + eigenTestResult[i+1]);
 }
 
+console.log("\n\n-------------testing linear system--------------------\n")
+var A = smalloc.alloc(9, smalloc.Types.Float);
+var b = smalloc.alloc(3, smalloc.Types.Float);
+var x = smalloc.alloc(3, smalloc.Types.Float);
 
+A[0] = 1.0;
+A[1] = 4.0;
+A[2] = 7.0;
+A[3] = 2.0;
+A[4] = 5.0;
+A[5] = 8.0;
+A[6] = 3.0;
+A[7] = 6.0;
+A[8] = 10.0;
 
+b[0] = 3.0;
+b[1] = 3.0;
+b[2] = 4.0;
+
+for (var i = 0; i < 3; i++) {
+	x[i] = 0.0;
+}
+addon.SolveLinearSystemHouseholderQr(3,3,A,b,x);
+
+for (var i = 0; i < 3; i++) {
+	console.log(x[i]);
+}
 
 
